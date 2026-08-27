@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"FrameRaw desktop permissions","local":true,"windows":["main"],"permissions":["core:default","dialog:allow-open","dialog:allow-save",{"identifier":"shell:allow-execute","allow":[{"args":true,"name":"frameraw-backend","sidecar":true}]}]}}

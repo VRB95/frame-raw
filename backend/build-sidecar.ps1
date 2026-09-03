@@ -9,4 +9,11 @@ $target = if ($rust) {
 }
 $python = Join-Path $PSScriptRoot "..\.venv\Scripts\python.exe"
 if (-not (Test-Path -LiteralPath $python)) { throw "Create .venv first and install backend/requirements.txt." }
-& $python -m PyInstaller --onefile --clean --collect-all rawpy --name "frameraw-backend-$target" --distpath "../src-tauri/binaries" main.py
+$binaryOutput = Join-Path $PSScriptRoot "..\src-tauri\binaries"
+Push-Location -LiteralPath $PSScriptRoot
+try {
+    & $python -m PyInstaller --onefile --clean --collect-all rawpy --name "frameraw-backend-$target" --distpath $binaryOutput main.py
+    if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed with exit code $LASTEXITCODE." }
+} finally {
+    Pop-Location
+}

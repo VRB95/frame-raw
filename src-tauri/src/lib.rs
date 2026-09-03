@@ -31,6 +31,13 @@ struct Placement {
 
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
+struct PhotoEdit {
+    source_path: String,
+    placement: Placement,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct ExportRequest {
     source_path: String,
     output_path: String,
@@ -38,6 +45,9 @@ struct ExportRequest {
     placement: Placement,
     border_mm: f64,
     dpi: u32,
+    layout_mode: String,
+    gap_mm: f64,
+    photos: Vec<PhotoEdit>,
 }
 
 #[derive(Deserialize)]

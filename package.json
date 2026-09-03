@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "backend:build": "powershell -ExecutionPolicy Bypass -File backend/build-sidecar.ps1",
+    "desktop": "npm run backend:build && tauri dev",
+    "desktop:build": "npm run backend:build && tauri build",
     "build": "tsc && vite build",
     "test": "vitest run",
     "tauri": "tauri"

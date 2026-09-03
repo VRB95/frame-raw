@@ -6,7 +6,7 @@ from PIL import Image
 
 from export import export_image
 from geometry import calculate_geometry, mm_to_pixels
-from models import ExportRequest, Format, Placement
+from models import ExportRequest, Format, Photo, Placement
 from raw_preview import generate_preview
 
 
@@ -55,6 +55,37 @@ class GeometryTests(unittest.TestCase):
             with Image.open(output) as rendered:
                 self.assertEqual(rendered.format, "PNG")
                 self.assertEqual(rendered.size, (100, 100))
+
+    def test_four_photo_grid_export_with_inner_gap(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            colors = ("#d92525", "#25a844", "#255bd9", "#e2b526")
+            sources = []
+            for index, color in enumerate(colors):
+                source = root / f"source-{index}.jpg"
+                Image.new("RGB", (80, 80), color).save(source, quality=100)
+                sources.append(source)
+            output = root / "grid.png"
+            photos = tuple(
+                Photo(str(source), Placement("fill", 1, 0, 0, 0))
+                for source in sources
+            )
+            request = ExportRequest(
+                str(sources[0]), str(output), Format(25.4, 25.4, "portrait"),
+                Placement("fill", 1, 0, 0, 0), 2.54, 100, "grid4", 2.54, photos,
+            )
+            export_image(request)
+            with Image.open(output) as rendered:
+                self.assertEqual(rendered.size, (100, 100))
+                red, green, blue, yellow = (
+                    rendered.getpixel((25, 25)), rendered.getpixel((75, 25)),
+                    rendered.getpixel((25, 75)), rendered.getpixel((75, 75)),
+                )
+                self.assertGreater(red[0], red[1] + 100)
+                self.assertGreater(green[1], green[0] + 40)
+                self.assertGreater(blue[2], blue[0] + 100)
+                self.assertGreater(yellow[0] + yellow[1], yellow[2] + 200)
+                self.assertGreater(sum(rendered.getpixel((50, 50))), 720)
 
 
 if __name__ == "__main__":

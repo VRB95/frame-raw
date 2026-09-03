@@ -26,3 +26,9 @@ export function outputSize(state: EditState) {
   const size = orientedSize(state.format);
   return { width: mmToPixels(size.widthMm, state.dpi), height: mmToPixels(size.heightMm, state.dpi) };
 }
+
+export function snapToCenter(offset: number, framePixels: number, thresholdPixels = 8) {
+  if (framePixels <= 0) return { offset, snapped: false };
+  const snapped = Math.abs(offset * framePixels) <= thresholdPixels;
+  return { offset: snapped ? 0 : offset, snapped };
+}
